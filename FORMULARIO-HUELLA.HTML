@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Formulario con Huella Digital</title>
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+</head>
+<body>
+  <h2>Encuesta Anónima</h2>
+  <p>Por favor completa el siguiente formulario. Solo se permite una respuesta por dispositivo.</p>
+
+  <iframe id="formFrame"
+          src="https://docs.google.com/forms/d/14OqhVbhfhiRcQ8FVKzQ5jI8dPmWVPQCVDNloakWbZGI/preview"
+          width="640" height="1000" frameborder="0" marginheight="0" marginwidth="0">Cargando…
+  </iframe>
+
+  <script>
+    // Inicializar FingerprintJS
+    FingerprintJS.load().then(fp => {
+      fp.get().then(result => {
+        const visitorId = result.visitorId;
+
+        const formFrame = document.getElementById('formFrame');
+        formFrame.onload = () => {
+          try {
+            const innerDoc = formFrame.contentWindow.document;
+            const input = innerDoc.querySelector('input[name="entry.1615447896_sentinel"]'); // <--- Reemplaza con tu ID
+
+            if (input) {
+              input.value = visitorId;
+            } else {
+              console.warn("No se encontró el campo fingerprint.");
+            }
+          } catch (err) {
+            console.error("No se pudo acceder al contenido del iframe (por restricciones CORS).");
+          }
+        };
+      });
+    });
+  </script>
+</body>
+</html>
